@@ -1,0 +1,42 @@
+services:
+  database:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    container_name: museum_quiz_database
+    restart: always
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
+    ports:
+      - "27017:27017"
+  backend:
+    image: thinker90/mq_back
+    container_name: museum_quiz_backend
+    restart: always
+    environment:
+      MONGODB_HOST: mongodb://museum_quiz_database:27017
+    ports:
+      - "8000:8000"
+    volumes:
+      - media:/museum_quiz_backend/media
+    depends_on:
+      - database
+
+  frontend:
+    image: thinker90/mq_front
+    container_name: museum_quiz_frontend
+    restart: always
+    ports:
+      - "880:80"
+      - "8443:443"
+    depends_on:
+      - backend
+      - database
+
+volumes:
+  media:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media
+      o: bind

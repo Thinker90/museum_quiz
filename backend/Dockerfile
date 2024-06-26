@@ -3,6 +3,8 @@ LABEL authors="Undervis, Thinker90"
 ENV PYTHONUNBUFFERED 1
 EXPOSE 8000
 
+RUN pip install gunicorn==20.1.0
+
 COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -18,4 +20,4 @@ RUN ["python", "manage.py", "makemigrations"]
 RUN ["python", "manage.py", "migrate"]
 RUN ["python", "manage.py", "createsuperuser", "--noinput"]
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "museum_quiz_backend.wsgi"]
